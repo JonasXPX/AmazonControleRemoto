@@ -64,6 +64,7 @@ public class AmazonMain {
 				miar.withInstanceId(instanceId);
 				miar.withInstanceType(type.nome);
 				ec2.modifyInstanceAttribute(miar);
+				System.out.println("Alterado para " + type.name());
 				break;
 			}
 			try {
@@ -75,8 +76,6 @@ public class AmazonMain {
 	
 	public static void main(String[] args) {
 		AmazonMain main = new AmazonMain(Region.getRegion(Regions.US_EAST_1));
-		main.chargeInstanceType("i-47b439ae", InstanceType.T2Medium);
-		
 		if(args.length == 0){
 			System.out.println("Use <stop,start> <instanceId>");
 			System.out.println("Use <change> <type (t2medium,c4large,c4xlarge)> <instanceId>");
@@ -105,6 +104,7 @@ public class AmazonMain {
 					main.chargeInstanceType(args[2], InstanceType.C4xLarge);
 					break;
 				}
+				return;
 			}
 		System.out.println("Use <stop,start> <instanceId>");
 		System.out.println("Use <change> <type (t2medium,c4large,c4xlarge)> <instanceId>");
