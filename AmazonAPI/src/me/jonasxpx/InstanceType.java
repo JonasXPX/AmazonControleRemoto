@@ -6,7 +6,7 @@ public enum InstanceType {
 	C4Large("c4.large"),
 	C4xLarge("c4.xlarge");
 	
-	private String nome;
+	public String nome;
 	
 	
 	private InstanceType(String nome){

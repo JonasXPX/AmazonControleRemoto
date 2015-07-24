@@ -56,25 +56,59 @@ public class AmazonMain {
 	}
 	
 	public void chargeInstanceType(String instanceId,InstanceType type){
-		ModifyInstanceAttributeRequest miar = new ModifyInstanceAttributeRequest(instanceId, InstanceAttributeName.InstanceType);
-		miar.setInstanceType(type.name());
-		ec2.modifyInstanceAttribute(miar);
+		while(true){
+			String a = ec2.describeInstances(new DescribeInstancesRequest().withInstanceIds(instanceId)).getReservations().get(0).getInstances().get(0).getState().getName();
+			System.out.println("Checando se esta padarado.... "+ a);
+			if(a.equalsIgnoreCase("stopped")){
+				ModifyInstanceAttributeRequest miar = new ModifyInstanceAttributeRequest();
+				miar.withInstanceId(instanceId);
+				miar.withInstanceType(type.nome);
+				ec2.modifyInstanceAttribute(miar);
+				break;
+			}
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+			}
+		}
 	}
 	
 	public static void main(String[] args) {
 		AmazonMain main = new AmazonMain(Region.getRegion(Regions.US_EAST_1));
+		main.chargeInstanceType("i-47b439ae", InstanceType.T2Medium);
+		
 		if(args.length == 0){
 			System.out.println("Use <stop,start> <instanceId>");
+			System.out.println("Use <change> <type (t2medium,c4large,c4xlarge)> <instanceId>");
 			return;
 		}
 		if(args.length == 2){
 			if(args[0].equalsIgnoreCase("stop")){
 				main.stopInstance(args[1]);
+				return;
 			}
 			if(args[0].equalsIgnoreCase("start")){
 				main.startInstance(args[1]);
+				return;
 			}
 		}
+		if(args.length == 3)
+			if(args[0].equalsIgnoreCase("change")){
+				switch(args[1]){
+				case "t2medium":
+					main.chargeInstanceType(args[2], InstanceType.T2Medium);
+					break;
+				case "c4large":
+					main.chargeInstanceType(args[2], InstanceType.C4Large);
+					break;
+				case "c4xlarge":
+					main.chargeInstanceType(args[2], InstanceType.C4xLarge);
+					break;
+				}
+			}
+		System.out.println("Use <stop,start> <instanceId>");
+		System.out.println("Use <change> <type (t2medium,c4large,c4xlarge)> <instanceId>");
+		
 	}
 	
 	
