@@ -1,3 +1,11 @@
+/**
+ * Atenção, este arquivo é propriedade de www.endcraft.com.br e sua copia esta proibida.
+ * Este aquivo é parte de um estudo e para possível certificação da amazon.
+ * 
+ * Mais informações aws.amazon.com/java
+ * Data de criação 23/07/2015
+ * @author JonasPC
+ */
 package me.jonasxpx;
 
 import com.amazonaws.auth.AWSCredentials;
@@ -6,11 +14,7 @@ import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2Client;
-import com.amazonaws.services.ec2.model.DescribeInstanceStatusRequest;
-import com.amazonaws.services.ec2.model.DescribeInstanceStatusResult;
 import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
-import com.amazonaws.services.ec2.model.InstanceAttributeName;
-import com.amazonaws.services.ec2.model.InstanceStatus;
 import com.amazonaws.services.ec2.model.ModifyInstanceAttributeRequest;
 import com.amazonaws.services.ec2.model.StartInstancesRequest;
 import com.amazonaws.services.ec2.model.StopInstancesRequest;
@@ -19,11 +23,20 @@ public class AmazonMain {
 	
 	private AWSCredentials credentials = null;
 	private AmazonEC2 ec2 = null;
-
+	
+	/**
+	 * Chamada do metodo constuctor.
+	 * @param region Região a ser definida
+	 */
 	public AmazonMain(Region region){
 		register(region);
 	}
 	
+	/**
+	 * Metodo privado chamado no metodo contrutor para iniciar as credencias(Secret key)
+	 * E setar a region principal de trabalho
+	 * @param region 
+	 */
 	private void register(Region region){
 		credentials = new ProfileCredentialsProvider().getCredentials();
 		ec2 = new AmazonEC2Client(credentials);
@@ -34,10 +47,19 @@ public class AmazonMain {
 		return ec2;
 	}
 	
+	/**
+	 * Para uma instancia.
+	 * @param instanceId ID da instacia.
+	 */
 	public void stopInstance(String instanceId){
 		ec2.stopInstances(new StopInstancesRequest().withInstanceIds(instanceId));
 		System.out.println(instanceId + " Stopped!...");
 	}
+	
+	/**
+	 * Inicia um instancia ou Aguarda uma instacia ser parada para iniciar.
+	 * @param instanceId Id da instancia
+	 */
 	public void startInstance(String instanceId){
 		while(true){
 			String a = ec2.describeInstances(new DescribeInstancesRequest().withInstanceIds(instanceId)).getReservations().get(0).getInstances().get(0).getState().getName();
@@ -55,6 +77,12 @@ public class AmazonMain {
 		
 	}
 	
+	/**
+	 * Muda o Tipo da instancia.
+	 * @param instanceId Id da instancia
+	 * @param type Tipo da instancia
+	 * @param ebs True para instancias acima da C3 e False Para instancias abaixo da C3
+	 */
 	public void chargeInstanceType(String instanceId,InstanceType type, boolean ebs){
 		while(true){
 			String a = ec2.describeInstances(new DescribeInstancesRequest().withInstanceIds(instanceId)).getReservations().get(0).getInstances().get(0).getState().getName();
@@ -78,6 +106,11 @@ public class AmazonMain {
 		}
 	}
 	
+	
+	/**
+	 * Inicia do sistema com os argumentos.
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		AmazonMain main = new AmazonMain(Region.getRegion(Regions.US_EAST_1));
 		if(args.length == 0){
