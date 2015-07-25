@@ -61,9 +61,12 @@ public class AmazonMain {
 			System.out.println("Checando se esta padarado.... "+ a);
 			if(a.equalsIgnoreCase("stopped")){
 				ModifyInstanceAttributeRequest miar = new ModifyInstanceAttributeRequest();
-				miar.withEbsOptimized(ebs);
 				miar.withInstanceId(instanceId);
 				miar.withInstanceType(type.nome);
+				ec2.modifyInstanceAttribute(miar);
+				miar = new ModifyInstanceAttributeRequest();
+				miar.withInstanceId(instanceId);
+				miar.withEbsOptimized(ebs);
 				ec2.modifyInstanceAttribute(miar);
 				System.out.println("Alterado para " + type.name());
 				break;
