@@ -55,12 +55,13 @@ public class AmazonMain {
 		
 	}
 	
-	public void chargeInstanceType(String instanceId,InstanceType type){
+	public void chargeInstanceType(String instanceId,InstanceType type, boolean ebs){
 		while(true){
 			String a = ec2.describeInstances(new DescribeInstancesRequest().withInstanceIds(instanceId)).getReservations().get(0).getInstances().get(0).getState().getName();
 			System.out.println("Checando se esta padarado.... "+ a);
 			if(a.equalsIgnoreCase("stopped")){
 				ModifyInstanceAttributeRequest miar = new ModifyInstanceAttributeRequest();
+				miar.withEbsOptimized(ebs);
 				miar.withInstanceId(instanceId);
 				miar.withInstanceType(type.nome);
 				ec2.modifyInstanceAttribute(miar);
@@ -95,13 +96,13 @@ public class AmazonMain {
 			if(args[0].equalsIgnoreCase("change")){
 				switch(args[1]){
 				case "t2medium":
-					main.chargeInstanceType(args[2], InstanceType.T2Medium);
+					main.chargeInstanceType(args[2], InstanceType.T2Medium, false);
 					break;
 				case "c4large":
-					main.chargeInstanceType(args[2], InstanceType.C4Large);
+					main.chargeInstanceType(args[2], InstanceType.C4Large, true);
 					break;
 				case "c4xlarge":
-					main.chargeInstanceType(args[2], InstanceType.C4xLarge);
+					main.chargeInstanceType(args[2], InstanceType.C4xLarge, true);
 					break;
 				}
 				return;
